@@ -51,7 +51,3 @@ data "template_file" "user_data" {
   template = file("./bastion_userdata.yaml")
 }
 
-# Print Public IP address of bastion host
-output "bastion_host_public_ip" {
-  value = aws_instance.bastion.public_ip
-}
