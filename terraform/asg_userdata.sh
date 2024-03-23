@@ -38,12 +38,12 @@ apt-get install python3-dev default-libmysqlclient-dev build-essential -y
 
 # Clone the app
 cd /
-git clone https://github.com/Kelvinskell/terra-tier.git
-cd /terra-tier
+git clone https://github.com/Krishnakali-Dutta/three-tier-app.git
+cd /three-tier-app
 
 # Populate App with environmental variables
 echo "MYSQL_ROOT_PASSWORD=$PASSWORD" > .env
-cd /terra-tier/application
+cd /three-tier-app/application
 echo "MYSQL_DB=$DB" > .env
 echo "MYSQL_HOST=$HOST" >> .env
 echo "MYSQL_USER=$USER" >> .env
@@ -55,29 +55,10 @@ echo "API_KEY=f39307bb61fb31ea2c458479762b9acc" >> .env
 # THIS IS BEIGN ADDED HERE SO THAT YOU CAN EASILY REPLICATE THIS INFRASTRUCTURE WITHOUT ANY HASSLES.
 # YOU CAN REPLACE IT WITH YOUR OWN MEDIASTACK API KEY.
 
-# Install the CodeDeploy agent
-apt install ruby-full wget -y
-cd /home/ubuntu
-wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install
-chmod +x ./install
-./install auto
 
 # Run Flask Application
-cp /terra-tier/newsread.service /etc/systemd/system/newsread.service
+cp /three-tier-app/newsread.service /etc/systemd/system/newsread.service
 systemctl daemon-reload
 systemctl enable newsread
-pip install -r /terra-tier/requirements.txt
+pip install -r /three-tier-app/requirements.txt
 systemctl start newsread
-
-# Install CloudWatch Agent
-wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
-sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
-
-# Download CloudWatch Agent Config file
-git clone  https://gist.github.com/d93be79bcbe31008decda7c3b5e25e5c.git
-
-# Run the CloudWatch Agent
-/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:d93be79bcbe31008decda7c3b5e25e5c/config.json
-sleep 4
-# For some weird reason, this command has to be repeated to ensure the agent is running
-/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:d93be79bcbe31008decda7c3b5e25e5c/config.json
